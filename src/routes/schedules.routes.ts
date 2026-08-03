@@ -4,7 +4,7 @@ import { Schedule } from "../libs/mongoose/models/schedule.model";
 
 const route = Router();
 // create schedules
-route.post("/schedule", middleware, async (req: Request, res: Response) => {
+route.post("/api/schedule", middleware, async (req: Request, res: Response) => {
     try {
         await Schedule.create(req.body);
 
@@ -17,7 +17,7 @@ route.post("/schedule", middleware, async (req: Request, res: Response) => {
     }
 })
 // get schedule
-route.get("/schedule", middleware, async (req: Request, res: Response) => {
+route.get("/api/schedule", middleware, async (req: Request, res: Response) => {
     try {
         const schedules = await Schedule.find();
         return res.json({ message: "OK", success: true, result: schedules })
@@ -29,7 +29,7 @@ route.get("/schedule", middleware, async (req: Request, res: Response) => {
     }
 });
 // update schedule
-route.put("/schedule/:id", middleware, async (req: Request, res: Response) => {
+route.put("/api/schedule/:id", middleware, async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
         const schedule = await Schedule.findOne({ _id: id })
@@ -49,7 +49,7 @@ route.put("/schedule/:id", middleware, async (req: Request, res: Response) => {
     }
 })
 // remove schedule
-route.delete("/schedule/:id", middleware, async (req: Request, res: Response) => {
+route.delete("/api/schedule/:id", middleware, async (req: Request, res: Response) => {
     const id = req.params.id;
     try {
         const schedule = await Schedule.deleteOne({ _id: id })

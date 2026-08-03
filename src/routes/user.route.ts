@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 const route = Router();
 
 // get user data
-route.get("/user/data", middleware , async (request: Request, response: Response) => {
+route.get("/api/user/data", middleware , async (request: Request, response: Response) => {
     const id = request.user?._id;
 
     try {
@@ -30,7 +30,7 @@ route.get("/user/data", middleware , async (request: Request, response: Response
 })
 
 // update user data
-route.put("/user/data", middleware, async (req: Request, res: Response) => {
+route.put("/api/user/data", middleware, async (req: Request, res: Response) => {
     const id = req.user?._id;
 
     try {
@@ -58,7 +58,7 @@ route.put("/user/data", middleware, async (req: Request, res: Response) => {
 })
 
 // register user
-route.post("/user/regist",async (request: Request, response: Response) => {
+route.post("/api/user/regist",async (request: Request, response: Response) => {
     try {
         const { phone, username, password} = request.body;
         const exist = await User.findOne({ phone });
@@ -85,7 +85,7 @@ route.post("/user/regist",async (request: Request, response: Response) => {
     }
 })
 // user login
-route.post("/user/login", async (request: Request, response: Response) => {
+route.post("/api/user/login", async (request: Request, response: Response) => {
     const { phone, password } = request.body as Record<string, string>;
 
     try {

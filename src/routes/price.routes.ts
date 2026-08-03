@@ -5,7 +5,7 @@ import { Price } from "../libs/mongoose/models/price.model";
 const route = Router();
 
 // create new price list
-route.post("/price", middleware, async (req: Request, res: Response) => {
+route.post("/api/price", middleware, async (req: Request, res: Response) => {
     try {
         const user = req.user;
         if (!user) throw new Error("Pengguna tidak ditemukan.");
@@ -22,7 +22,7 @@ route.post("/price", middleware, async (req: Request, res: Response) => {
 })
 
 // get price list
-route.get("/price", middleware, async (req: Request, res: Response) => {
+route.get("/api/price", middleware, async (req: Request, res: Response) => {
     try {
         const user = req.user;
         if (!user) throw new Error("Pengguna tidak ditemukan.");
@@ -39,7 +39,7 @@ route.get("/price", middleware, async (req: Request, res: Response) => {
 })
 
 // update price list
-route.put("/price/:id", middleware, async (req: Request, res: Response) => {
+route.put("/api/price/:id", middleware, async (req: Request, res: Response) => {
     try {
         const user = req.user;
         if (!user) throw new Error("Pengguna tidak ditemukan.");
@@ -64,7 +64,7 @@ route.put("/price/:id", middleware, async (req: Request, res: Response) => {
 })
 
 // remove price list
-route.delete("/price/:id", middleware, async (req: Request, res: Response) => {
+route.delete("/api/price/:id", middleware, async (req: Request, res: Response) => {
     try {
         const user = req.user;
         if (!user) throw new Error("Pengguna tidak ditemukan.");

@@ -10,11 +10,11 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/api", route);
-app.use("/api", scheduleRoutes);
-app.use("/api", userRoutes);
-app.use("/api", priceRoutes);
-app.use("/api", invoiceRoute);
+app.use("/", route);
+app.use("/", scheduleRoutes);
+app.use("/", userRoutes);
+app.use("/", priceRoutes);
+app.use("/", invoiceRoute);
 
 const start = async () => {
     await connectDatabase()

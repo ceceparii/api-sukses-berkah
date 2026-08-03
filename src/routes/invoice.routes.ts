@@ -6,7 +6,7 @@ import { Schedule } from "../libs/mongoose/models/schedule.model";
 const route = Router();
 
 // create new invoice
-route.post("/invoice", middleware, async (req: Request, res: Response) => {
+route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
     try {
         const user = req.user;
         if (!user) throw new Error("Pengguna tidak ditemukan.");
@@ -23,7 +23,7 @@ route.post("/invoice", middleware, async (req: Request, res: Response) => {
 })
 
 // get invoices
-route.get("/invoices", middleware, async (req: Request, res: Response) => {
+route.get("/api/invoices", middleware, async (req: Request, res: Response) => {
     try {
         const user = req.user;
         if (!user) throw new Error("Pengguna tidak ditemukan.");
@@ -43,7 +43,7 @@ route.get("/invoices", middleware, async (req: Request, res: Response) => {
 })
 
 // view invoice
-route.get("/invoice/:id", middleware, async (req: Request, res: Response) => {
+route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) => {
     try {
         const invoiceId = req.params.id;
 
@@ -64,7 +64,7 @@ route.get("/invoice/:id", middleware, async (req: Request, res: Response) => {
 })
 
 // update invoice
-route.put("/invoice/:id", middleware, async (req: Request, res: Response) => {
+route.put("/api/invoice/:id", middleware, async (req: Request, res: Response) => {
     try {
         const invoiceId = req.params.id;
 

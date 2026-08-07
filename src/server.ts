@@ -5,6 +5,7 @@ import { userRoutes } from "./routes/user.route";
 import { scheduleRoutes } from "./routes/schedules.routes";
 import { priceRoutes } from "./routes/price.routes";
 import { invoiceRoute } from "./routes/invoice.routes";
+import { airportRoutes } from "./routes/airport.routes";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/", scheduleRoutes);
 app.use("/", userRoutes);
 app.use("/", priceRoutes);
 app.use("/", invoiceRoute);
+app.use("/", airportRoutes)
 
 const start = async () => {
     await connectDatabase()

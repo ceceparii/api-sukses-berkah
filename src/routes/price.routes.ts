@@ -12,7 +12,7 @@ route.post("/api/price", middleware, async (req: Request, res: Response) => {
 
         const invoice = await Price.create(req.body);
 
-        return res.json({ message: "Berhasil menambahkan daftar harga", success: false, result: invoice });
+        return res.json({ message: "Berhasil menambahkan daftar harga", success: true, result: invoice });
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)

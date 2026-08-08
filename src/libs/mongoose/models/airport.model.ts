@@ -1,6 +1,6 @@
 import { model, Schema, Types } from "mongoose";
 
-interface AirportType {
+export interface AirportType {
     code: string;
     airport_name: string;
     city: string;
@@ -8,7 +8,7 @@ interface AirportType {
     _id: Types.ObjectId
 }
 
-const AirportSchema = new Schema<AirportType>({
+export const AirportSchema = new Schema<AirportType>({
     code: String,
     airport_name: String,
     city: String,

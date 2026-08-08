@@ -9,7 +9,7 @@ route.get("/api/airports", middleware , async (request: Request, response: Respo
     try {
         const result = await Airport.find();
 
-        return response.json({ message: "OK", result, succes: true })
+        return response.json({ message: "OK", result, success: true })
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -25,7 +25,7 @@ route.post("/api/airport", middleware , async (request: Request, response: Respo
 
         const result = await Airport.create(newAirport);
 
-        return response.json({ message: "Berhasil menambahkan bandara", result, succes: true })
+        return response.json({ message: "Berhasil menambahkan bandara", result, success: true })
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -44,7 +44,7 @@ route.put("/api/airport/id", middleware , async (request: Request, response: Res
         airport.set(request.body);
 
         await airport?.save()
-        return response.json({ message: "Berhasil memperbaharui bandara", result: airport, succes: true })
+        return response.json({ message: "Berhasil memperbaharui bandara", result: airport, success: true })
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)

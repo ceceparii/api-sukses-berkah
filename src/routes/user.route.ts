@@ -20,7 +20,7 @@ route.get("/api/user/data", middleware , async (request: Request, response: Resp
             throw new Error("Pengguna tidak ditemukan")
         }
 
-        return response.json({ message: "OK", result: user })
+        return response.json({ message: "OK", result: user, success: true })
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -48,7 +48,7 @@ route.put("/api/user/data", middleware, async (req: Request, res: Response) => {
 
         await user.save();
 
-        return res.json({ message: "Data berhasil diperbaharui."})
+        return res.json({ message: "Data berhasil diperbaharui.", success: true, result: user})
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)

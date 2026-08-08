@@ -1,48 +1,41 @@
 import { model, Schema, Types } from "mongoose";
+import { AirportSchema, AirportType } from "./airport.model";
 
-interface FlightType {
+export interface ScheduleType {
+    _id?: Types.ObjectId;
+    depart: AirportType;
+    arrival: AirportType;
     date: Date;
-    airport: string;
-    airportName: string;
-    city: string;
-    country: string;
-    airlines: {
-        name: string;
-        logo?: string;
-    }
+    return?: Date | null;
+    persons: PersonType[];
+    airlines?: AirlineType | null;
 }
 
-interface PersonType {
+export interface AirlineType {
+    code: string;
+    name: string;
+    logo: string;
+}
+
+export interface PersonType {
     name: string;
     baggage: string;
 }
 
-export interface ScheduleType {
-    _id: Types.ObjectId;
-    createdAt: Date;
-    depart: FlightType;
-    arive: FlightType;
-    person: PersonType[]
-}
-
-const FlightSchema = new Schema<FlightType>({
-    date: Date,
-    airport: String,
-    airportName: String,
-    city: String,
-    country: String,
-    airlines: {
-        name: String,
-        logo: String,
-    }
+const AirlineSchema = new Schema<AirlineType>({
+    code: String,
+    name: String,
+    logo: String,
 })
 
 const ScheduleSchema = new Schema<ScheduleType>({
     _id: Types.ObjectId,
-    createdAt: Date,
-    depart: FlightSchema,
-    arive: FlightSchema,
-    person: [{ name: String, baggage: String}]
+    depart: AirportSchema,
+    arrival: AirportSchema,
+    date: Date,
+    return: Date,
+    airlines: AirlineSchema,
+    persons: [{ name: String, baggage: String}]
 })
 
 export const Schedule = model("Schedules", ScheduleSchema)

@@ -13,7 +13,7 @@ route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
 
         const invoice = await Invoice.create(req.body);
 
-        return res.json({ message: "", success: false, result: invoice });
+        return res.json({ message: "Berhasil membuat invoice", success: true, result: invoice });
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -33,7 +33,7 @@ route.get("/api/invoices", middleware, async (req: Request, res: Response) => {
             model: Schedule,
         });
 
-        return res.json({ message: "", success: false, result: invoices });
+        return res.json({ message: "", success: true, result: invoices });
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -54,7 +54,7 @@ route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
             model: Schedule,
         });
 
-        return res.json({ message: "", success: false, result: invoice });
+        return res.json({ message: "", success: true, result: invoice });
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -76,7 +76,7 @@ route.put("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
         invoice.set(req.body);
         await invoice.save();
 
-        return res.json({ message: "Invoice telah diperbaharui.", success: false, result: invoice });
+        return res.json({ message: "Invoice telah diperbaharui.", success: true, result: invoice });
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)

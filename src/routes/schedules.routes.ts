@@ -6,9 +6,9 @@ const route = Router();
 // create schedules
 route.post("/api/schedule", middleware, async (req: Request, res: Response) => {
     try {
-        await Schedule.create(req.body);
+        const result = await Schedule.create(req.body);
 
-        return res.json({ message: "Berhasil menambahkan trip", success: false})
+        return res.json({ message: "Berhasil menambahkan trip", success: true, result})
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -40,7 +40,7 @@ route.put("/api/schedule/:id", middleware, async (req: Request, res: Response) =
 
         await schedule.save();
 
-        return res.json({ message: "Berhasil menambahkan trip", success: false, result: schedule})
+        return res.json({ message: "Berhasil menambahkan trip", success: true, result: schedule})
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -56,7 +56,7 @@ route.delete("/api/schedule/:id", middleware, async (req: Request, res: Response
 
         if (!schedule) throw new Error("Jadwal tidak ditemukan");
 
-        return res.json({ message: "Berhasil menambahkan trip", success: false, result: schedule})
+        return res.json({ message: "Berhasil menambahkan trip", success: true, result: schedule})
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)

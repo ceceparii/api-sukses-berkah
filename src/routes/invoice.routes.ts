@@ -7,11 +7,16 @@ const route = Router();
 
 // create new invoice
 route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+
     try {
+        if(!userId) {
+            return res.json({ success: false, message: "Invalid user id"})
+        }
         const user = req.user;
         if (!user) throw new Error("Pengguna tidak ditemukan.");
 
-        const invoice = await Invoice.create(req.body);
+        const invoice = await Invoice.create({...req.body, userId});
 
         return res.json({ message: "Berhasil membuat invoice", success: true, result: invoice });
     } catch (error: unknown) {
@@ -55,6 +60,37 @@ route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
         });
 
         return res.json({ message: "", success: true, result: invoice });
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false})
+        }
+    }
+})
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+// view invoice
+route.get("/api/invoice/search/:name", middleware, async (req: Request, res: Response) => {
+    try {
+        const search = req.params.name as string;
+
+        if (!search) throw new Error("Pengguna tidak ditemukan.");
+
+        const conditions = search
+        .split("")
+        .map(char => ({
+            customerName: {
+            $regex: escapeRegex(char),
+            $options: "i",
+            },
+        }));
+
+        const invoices = await Invoice.find({
+            $and: conditions,
+        });
+
+        return res.json({ message: "", success: true, result: invoices });
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)

@@ -32,7 +32,7 @@ const InvoiceSchema = new Schema<InvoiceType>({
     userId: Types.ObjectId,
     customer: String,
     rate: Number,
-    currency: { type: String, enum: ["JPY", "IDR "]},
+    currency: { type: String, enum: ["JPY", "IDR"]},
     batch: Types.ObjectId,
     trip: { type: String, enum: ["IDN", "JP"]},
     items: [ItemSchema]

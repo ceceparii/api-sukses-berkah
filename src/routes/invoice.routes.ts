@@ -1,9 +1,46 @@
 import { Request, Response, Router } from "express";
 import { middleware } from "./middleware";
-import { Invoice } from "../libs/mongoose/models/invoice.model";
-import { Schedule } from "../libs/mongoose/models/schedule.model";
+import { Invoice, InvoiceType } from "../libs/mongoose/models/invoice.model";
+import { Schedule, ScheduleType } from "../libs/mongoose/models/schedule.model";
+import { generateInvoicePDF } from "../libs/services/generatePDF";
+import { User } from "../libs/mongoose/models/user.model";
 
 const route = Router();
+
+// download invoice
+route.post("/api/download/invoice/:id", middleware, async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+
+    try {
+        if(!userId) {
+            return res.json({ success: false, message: "Invalid user id"})
+        }
+        const user = await User.findOne({_id: userId});
+        if (!user) throw new Error("Pengguna tidak ditemukan.");
+
+        const invoice = await Invoice.findOne({_id: req.params.id}).populate({
+            path: "batch",
+            model: Schedule,
+        }) as InvoiceType<ScheduleType> | null;
+
+        if(!invoice) throw new Error("Invoice tidak ditemukan");
+
+        const pdf = await generateInvoicePDF(user, invoice);
+
+        res.set({
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename=${invoice.customer}_${new Date(invoice.batch.date).toLocaleDateString()}.pdf`,
+            "Content-Length": pdf?.length
+        });
+
+        return res.send(pdf)
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false})
+        }
+    }
+})
 
 // create new invoice
 route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
@@ -67,27 +104,28 @@ route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
         }
     }
 })
+
 function escapeRegex(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-// view invoice
-route.get("/api/invoice/search/:name", middleware, async (req: Request, res: Response) => {
+
+// search invoice
+route.get("/api/search/invoice/:name", middleware, async (req: Request, res: Response) => {
     try {
         const search = req.params.name as string;
 
         if (!search) throw new Error("Pengguna tidak ditemukan.");
 
-        const conditions = search
-        .split("")
-        .map(char => ({
-            customerName: {
-            $regex: escapeRegex(char),
-            $options: "i",
-            },
-        }));
+        const regex = new RegExp(
+            search
+                .split("")
+                .map(char => char.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+                .join(".*"),
+            "i"
+        );
 
         const invoices = await Invoice.find({
-            $and: conditions,
+            customer: regex
         });
 
         return res.json({ message: "", success: true, result: invoices });

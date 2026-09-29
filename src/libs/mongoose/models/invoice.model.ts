@@ -13,14 +13,14 @@ export interface ItemType {
     unit: UnitType;
 }
 
-export interface InvoiceType {
+export interface InvoiceType<T= Types.ObjectId> {
     _id: Types.ObjectId;
     userId: Types.ObjectId;
-    customer: String;
+    customer: String | RegExp;
     rate: number;
     deposit: number;
     currency: "JPY" | "IDR";
-    batch: Types.ObjectId;
+    batch: T;
     trip: "IDN" | "JP";
     items: ItemType[];
     total: number,

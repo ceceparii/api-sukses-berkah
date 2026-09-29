@@ -27,11 +27,8 @@ route.post("/api/download/invoice/:id", middleware, async (req: Request, res: Re
 
         const pdf = await generateInvoicePDF(user, invoice);
 
-        res.set({
-            "Content-Type": "application/pdf",
-            "Content-Disposition": `attachment; filename=${invoice.customer}_${new Date(invoice.batch.date).toLocaleDateString()}.pdf`,
-            "Content-Length": pdf?.length
-        });
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename=${invoice.customer}_${new Date(invoice.batch.date).toLocaleDateString()}.pdf`)
 
         return res.send(pdf)
     } catch (error: unknown) {

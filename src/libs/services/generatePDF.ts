@@ -1,10 +1,11 @@
-import puppeteer from "puppeteer";
 import { UserType } from "../mongoose/models/user.model";
 import { InvoiceType } from "../mongoose/models/invoice.model";
 import { ScheduleType } from "../mongoose/models/schedule.model";
 
 
 export const generateInvoicePDF = async (user: UserType, invoice: InvoiceType<ScheduleType>) => {
+    const { default: puppeteer } = await import("puppeteer");
+    
     const browser = await puppeteer.launch({
         headless: true
     })

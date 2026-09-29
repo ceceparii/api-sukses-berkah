@@ -8,7 +8,7 @@ import { User } from "../libs/mongoose/models/user.model";
 const route = Router();
 
 // download invoice
-route.post("/api/download/invoice/:id", middleware, async (req: Request, res: Response) => {
+route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Response) => {
     const userId = req.user?._id;
 
     try {

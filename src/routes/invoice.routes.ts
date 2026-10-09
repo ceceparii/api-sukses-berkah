@@ -2,7 +2,6 @@ import { Request, Response, Router } from "express";
 import { middleware } from "./middleware";
 import { Invoice, InvoiceType } from "../libs/mongoose/models/invoice.model";
 import { Schedule, ScheduleType } from "../libs/mongoose/models/schedule.model";
-import { generateInvoicePDF } from "../libs/services/generatePDF";
 import { User } from "../libs/mongoose/models/user.model";
 
 const route = Router();
@@ -15,7 +14,7 @@ route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Res
         if(!userId) {
             return res.json({ success: false, message: "Invalid user id"})
         }
-        const user = await User.findOne({_id: userId});
+        const user = await User.findOne({_id: userId}).select("username phone banks");
         if (!user) throw new Error("Pengguna tidak ditemukan.");
 
         const invoice = await Invoice.findOne({_id: req.params.id}).populate({
@@ -25,12 +24,12 @@ route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Res
 
         if(!invoice) throw new Error("Invoice tidak ditemukan");
 
-        const pdf = await generateInvoicePDF(user, invoice);
+        const result = {
+            invoice,
+            user,
+        }
 
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", `attachment; filename=${invoice.customer}_${new Date(invoice.batch.date).toLocaleDateString()}.pdf`)
-
-        return res.send(pdf)
+        return res.json({ success: true, result, message: ""})
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)

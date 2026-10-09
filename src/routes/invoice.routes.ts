@@ -155,4 +155,26 @@ route.put("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
     }
 })
 
+// download invoice
+route.delete("/api/delete/invoice/:id", middleware, async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+
+    try {
+        if(!userId) {
+            return res.json({ success: false, message: "Invalid user id"})
+        }
+        const user = await User.findOne({_id: userId}).select("username phone banks");
+        if (!user) throw new Error("Pengguna tidak ditemukan.");
+
+        const invoice = await Invoice.deleteOne({_id: req.params.id})
+
+        if(!invoice.deletedCount) throw new Error("Invoice tidak ditemukan");
+        return res.json({ success: true, message: "Berhasil menghapus invoice"})
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false})
+        }
+    }
+})
 export const invoiceRoute = route;

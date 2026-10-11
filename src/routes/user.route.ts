@@ -125,4 +125,40 @@ route.post("/api/user/login", async (request: Request, response: Response) => {
     }
 })
 
+route.post("/api/user/bank", async (req: Request, res: Response) => {
+    try {
+        const id = req.user?._id;
+        const user = await User.updateOne({_id: id}, {
+            $push: {
+                banks: req.body
+            }
+        })
+
+        return res.json({success: true, message: "Berhasil menambah akun bank", result: user})
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            
+        }
+    }
+})
+
+route.delete(`/api/user/bank/:id`, async (req: Request, res: Response) => {
+    try {
+        const id = req.user?._id;
+        const user = await User.updateOne({_id: id}, {
+            $pull: {
+                banks: req.params._id,
+            }
+        })
+
+        return res.json({success: true, message: "Berhasil menghapus akun bank", result: user})
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            
+        }
+    }
+})
+
 export const userRoutes = route

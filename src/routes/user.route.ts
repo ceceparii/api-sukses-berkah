@@ -125,15 +125,19 @@ route.post("/api/user/login", async (request: Request, response: Response) => {
     }
 })
 // add bank account
-route.post("/api/user/bank", async (req: Request, res: Response) => {
+route.post("/api/user/bank", middleware, async (req: Request, res: Response) => {
     try {
         const _id = req.user?._id
+        
         if(!_id) {
             throw new Error("Pengguna tidak ditemukan.")
         }
-        const user = await User.findOneAndUpdate({_id}, {
+        const user = await User.updateOne({_id}, {
             $push: {
-                banks: req.body
+                banks: {
+                    ...req.body,
+                    _id: new Types.ObjectId()
+                }
             }
         })
 
@@ -146,7 +150,7 @@ route.post("/api/user/bank", async (req: Request, res: Response) => {
     }
 })
 // remove bank account
-route.delete(`/api/user/bank/:id`, async (req: Request, res: Response) => {
+route.delete(`/api/user/bank/:id`, middleware, async (req: Request, res: Response) => {
     try {
         const id = req.user?._id;
         const user = await User.updateOne({_id: id}, {

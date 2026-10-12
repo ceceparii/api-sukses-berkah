@@ -131,7 +131,7 @@ route.post("/api/user/bank", async (req: Request, res: Response) => {
         if(!_id) {
             throw new Error("Pengguna tidak ditemukan.")
         }
-        const user = await User.updateOne({_id}, {
+        const user = await User.findOneAndUpdate({_id}, {
             $push: {
                 banks: req.body
             }
@@ -141,7 +141,7 @@ route.post("/api/user/bank", async (req: Request, res: Response) => {
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
-            
+            return res.json({success: false, message: error.message})
         }
     }
 })
@@ -159,7 +159,7 @@ route.delete(`/api/user/bank/:id`, async (req: Request, res: Response) => {
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
-            
+            return res.json({success: false, message: error.message})
         }
     }
 })

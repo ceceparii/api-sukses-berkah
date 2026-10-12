@@ -32,6 +32,7 @@ const ItemSchema = new Schema<ItemType>({
     price: Number,
     qty: Number,
     tax: Number,
+    unit: {type: String, enum: ["kg", "pair", "slop", "item", "pcs"]},
     subtotal: Number
 })
 

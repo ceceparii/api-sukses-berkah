@@ -35,7 +35,7 @@ route.put("/api/user/data", middleware, async (req: Request, res: Response) => {
 
     try {
         if(!id) {
-            throw new Error("Vad request, invalid user id");
+            throw new Error("Bad request, invalid user id");
         }
 
         const user = await User.findOne({ _id: id }).select("-password");
@@ -124,11 +124,14 @@ route.post("/api/user/login", async (request: Request, response: Response) => {
         }
     }
 })
-
+// add bank account
 route.post("/api/user/bank", async (req: Request, res: Response) => {
     try {
-        const id = req.user?._id;
-        const user = await User.updateOne({_id: id}, {
+        const _id = req.user?._id
+        if(!_id) {
+            throw new Error("Pengguna tidak ditemukan.")
+        }
+        const user = await User.updateOne({_id}, {
             $push: {
                 banks: req.body
             }
@@ -142,7 +145,7 @@ route.post("/api/user/bank", async (req: Request, res: Response) => {
         }
     }
 })
-
+// remove bank account
 route.delete(`/api/user/bank/:id`, async (req: Request, res: Response) => {
     try {
         const id = req.user?._id;

@@ -1,5 +1,13 @@
 import { model, Schema, Types } from "mongoose";
-import { BankSchema, BankType } from "./bank.model"
+
+// bank type
+export interface BankType {
+    _id: Types.ObjectId;
+    userId: Types.ObjectId;
+    bankName: string;
+    bankAccount: string;
+    bankUser: string;
+}
 
 // user type
 export interface UserType {
@@ -11,6 +19,15 @@ export interface UserType {
     createdAt: Date;
     banks: BankType[]
 }
+
+// bank schema
+const BankSchema = new Schema<BankType>({
+    _id: Types.ObjectId,
+    bankName: String,
+    bankAccount: String,
+    bankUser: String,
+    userId: Types.ObjectId,
+})
 
 // user schema
 const UserSchema = new Schema<UserType>({

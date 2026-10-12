@@ -101,10 +101,6 @@ route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
     }
 })
 
-function escapeRegex(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 // search invoice
 route.get("/api/search/invoice/:name", middleware, async (req: Request, res: Response) => {
     try {

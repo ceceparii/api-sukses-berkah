@@ -114,6 +114,34 @@ route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
     }
 })
 
+// search invoice by month
+route.get(`/api/filter-month/invoice/:month/:year`, middleware, async (req: Request, res: Response) => {
+    try {
+        const month = Number(req.params.month);
+        const year = Number(req.params.year);
+
+        const startDate = new Date(year, month, -1, 1);
+        const endDate = new Date(year, month, 1);
+        
+        const invoices = await Invoice.find().populate({
+            path: "batch",
+            match: {
+                date: {
+                    $gte: startDate,
+                    $lt: endDate,
+                },
+            },
+        });
+
+        return res.json({ message: "", success: true, result: invoices });
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false})
+        }
+    }
+})
+
 // search invoice
 route.get("/api/search/invoice/:name", middleware, async (req: Request, res: Response) => {
     try {

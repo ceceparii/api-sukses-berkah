@@ -131,6 +131,7 @@ route.get(`/api/filter-month/invoice/:month/:year`, middleware, async (req: Requ
                     $lt: endDate,
                 },
             },
+            model: Schedule
         });
 
         return res.json({ message: "", success: true, result: invoices });

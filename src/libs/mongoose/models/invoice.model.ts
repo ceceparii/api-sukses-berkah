@@ -4,7 +4,7 @@ type UnitType = "kg" | "pair" | "slop" | "item" | "pcs";
 
 export interface ItemType {
     _id: Types.ObjectId,
-    name: String;
+    name: string;
     price: number;
     qty: number;
     tax: number;
@@ -19,6 +19,7 @@ export interface InvoiceType<T= Types.ObjectId> {
     customer: String | RegExp;
     rate: number;
     deposit: number;
+    date: Date;
     currency: "JPY" | "IDR";
     batch: T;
     trip: "IDN" | "JP";
@@ -40,10 +41,14 @@ const InvoiceSchema = new Schema<InvoiceType>({
     _id: Types.ObjectId,
     userId: Types.ObjectId,
     customer: String,
+    date: { type: Date, required: true },
     rate: Number,
     deposit: Number,
     currency: { type: String, enum: ["JPY", "IDR"]},
-    batch: Types.ObjectId,
+    batch: {
+        type: Types.ObjectId,
+        ref: "Schedule"
+    },
     trip: { type: String, enum: ["IDN", "JP"]},
     items: [ItemSchema],
     total: Number,

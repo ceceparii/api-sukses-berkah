@@ -123,15 +123,15 @@ route.get(`/api/filter-month/invoice/:month/:year`, middleware, async (req: Requ
         const startDate = new Date(year, month, -1, 1);
         const endDate = new Date(year, month, 1);
         
-        const invoices = await Invoice.find().populate({
-            path: "batch",
-            match: {
-                date: {
+        const invoices = await Invoice.find({
+            date: {
                     $gte: startDate,
                     $lt: endDate,
-                },
-            },
-            model: Schedule
+                }
+            })
+        .populate({
+            path: "batch",
+            model: Schedule,
         });
 
         return res.json({ message: "", success: true, result: invoices });

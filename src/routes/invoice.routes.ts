@@ -120,7 +120,7 @@ route.get(`/api/filter-month/invoice/:month/:year`, middleware, async (req: Requ
         const month = Number(req.params.month);
         const year = Number(req.params.year);
 
-        const startDate = new Date(year, month, -1, 1);
+        const startDate = new Date(year, month -1, 1);
         const endDate = new Date(year, month, 1);
         
         const invoices = await Invoice.find({

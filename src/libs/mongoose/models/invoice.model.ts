@@ -31,6 +31,7 @@ const ItemSchema = new Schema<ItemType>({
     _id: Types.ObjectId,
     name: String,
     price: Number,
+    currency: {type: String, enum: ["IDR", "JPY"]},
     qty: Number,
     tax: Number,
     unit: {type: String, enum: ["kg", "pair", "slop", "item", "pcs"]},

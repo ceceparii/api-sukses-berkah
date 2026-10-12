@@ -131,6 +131,9 @@ route.get("/api/search/invoice/:name", middleware, async (req: Request, res: Res
 
         const invoices = await Invoice.find({
             customer: regex
+        }).populate({
+            path: "batch",
+            model: Schedule,
         });
 
         return res.json({ message: "", success: true, result: invoices });

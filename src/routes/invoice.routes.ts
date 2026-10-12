@@ -3,6 +3,7 @@ import { middleware } from "./middleware";
 import { Invoice, InvoiceType } from "../libs/mongoose/models/invoice.model";
 import { Schedule, ScheduleType } from "../libs/mongoose/models/schedule.model";
 import { User } from "../libs/mongoose/models/user.model";
+import { Types } from "mongoose";
 
 const route = Router();
 
@@ -38,7 +39,7 @@ route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Res
     }
 })
 
-// create new invoice
+// save invoice
 route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
     const userId = req.user?._id;
 
@@ -46,12 +47,24 @@ route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
         if(!userId) {
             return res.json({ success: false, message: "Invalid user id"})
         }
-        const user = req.user;
-        if (!user) throw new Error("Pengguna tidak ditemukan.");
 
-        const invoice = await Invoice.create({...req.body, userId});
+        const {_id, ...data} = req.body;
+        if (_id) {
+            const invoice = await Invoice.findOneAndUpdate({_id}, {$set: data}, {
+                new: true,
+                runValidators: true
+            });
+    
+            if (!invoice) {
+                throw new Error("Gagal menyimpan invoice")
+            }
+    
+            return res.json({ message: "Berhasil menyimpan invoice", success: true, result: invoice });
 
-        return res.json({ message: "Berhasil membuat invoice", success: true, result: invoice });
+        } else {
+            const invoice = await Invoice.create({...data, _id: new Types.ObjectId()})
+            return res.json({ message: "Berhasil menyimpan invoice", success: true, result: invoice });
+        }
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -129,29 +142,7 @@ route.get("/api/search/invoice/:name", middleware, async (req: Request, res: Res
     }
 })
 
-// update invoice
-route.put("/api/invoice/:id", middleware, async (req: Request, res: Response) => {
-    try {
-        const invoiceId = req.params.id;
-
-        if (!invoiceId) throw new Error("Pengguna tidak ditemukan.");
-        
-        const invoice = await Invoice.findOne({ _id: invoiceId });
-        if (!invoice) throw new Error("Invoice tidak ditemukan.");
-
-        invoice.set(req.body);
-        await invoice.save();
-
-        return res.json({ message: "Invoice telah diperbaharui.", success: true, result: invoice });
-    } catch (error: unknown) {
-        if(error instanceof Error) {
-            console.error(error.message)
-            return res.json({ message: error.message, success: false})
-        }
-    }
-})
-
-// download invoice
+// delete invoice
 route.delete("/api/delete/invoice/:id", middleware, async (req: Request, res: Response) => {
     const userId = req.user?._id;
 

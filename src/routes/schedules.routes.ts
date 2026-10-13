@@ -18,17 +18,17 @@ route.post("/api/schedule", middleware, async (req: Request, res: Response) => {
     }
 })
 
-// get schedules by month
+// get schedules by month and origin
 route.get("/api/schedules/:month/:year/:origin", middleware, async (req: Request, res: Response) => {
     try {
         const month: number = Number(req.params.month);
         const year: number = Number(req.params.year);
-        const origin: string = req.params.origin as string || "IDN";
+        const origin: string = req.params.origin as string;
         
         const startDate = new Date(year, month -1, 1);
         const endDate = new Date(year, month, 1);
 
-        const key = origin.toUpperCase() === "IDN" ? "date" : "return";
+        const key = origin.toUpperCase() === "INDONESIA" ? "date" : "return";
         
         const query = {
             [key]: {
@@ -38,7 +38,24 @@ route.get("/api/schedules/:month/:year/:origin", middleware, async (req: Request
         }
 
         const schedules = await Schedule.find(query);
-        return res.json({ message: "OK", success: true, result: schedules })
+
+        const result = schedules.map((s) => {
+            if (key === "date") {
+                return s
+            } else {
+                return {
+                    persons: s.persons,
+                    airlines: s.airlines,
+                    return: s.date,
+                    _id: s._id,
+                    date: s.return,
+                    depart: s.arrival,
+                    arrival: s.depart
+                }
+            }
+        })
+
+        return res.json({ message: "OK", success: true, result })
     } catch (error: unknown) {
         if(error instanceof Error) {
             console.error(error.message)
@@ -46,6 +63,7 @@ route.get("/api/schedules/:month/:year/:origin", middleware, async (req: Request
         }
     }
 });
+
 // get all schedules
 route.get("/api/schedule", middleware, async (req: Request, res: Response) => {
     try {
@@ -58,7 +76,7 @@ route.get("/api/schedule", middleware, async (req: Request, res: Response) => {
         }
     }
 });
-// get all schedules
+// get next schedules
 route.get("/api/schedule/next", middleware, async (req: Request, res: Response) => {
     try {
         const nextScheduleDepart = await Schedule.findOne({

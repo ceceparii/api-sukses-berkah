@@ -65,7 +65,7 @@ route.get("/api/schedules/:month/:year/:origin", middleware, async (req: Request
 });
 
 // get all schedules
-route.get("/api/schedule", middleware, async (req: Request, res: Response) => {
+route.get("/api/schedules", middleware, async (req: Request, res: Response) => {
     try {
         const schedules = await Schedule.find();
         return res.json({ message: "OK", success: true, result: schedules })
@@ -140,4 +140,26 @@ route.delete("/api/schedule/:id", middleware, async (req: Request, res: Response
     }
 })
 
+// serach by name
+route.get("/api/schedule/find-by-personal-name/:name", middleware, async (req: Request, res: Response) => {
+    try {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = d.getMonth() - 2;
+
+        const schedules = await Schedule.find({
+            "persons.name": req.params.name,
+            date: {
+                $gte: new Date(year, month, 1)
+            }
+        });
+
+        return res.json({success: true, result: schedules})
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false})
+        }
+    }
+})
 export const scheduleRoutes = route

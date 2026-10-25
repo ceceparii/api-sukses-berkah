@@ -87,7 +87,7 @@ route.post("/api/user/regist",async (request: Request, response: Response) => {
 // user login
 route.post("/api/user/login", async (request: Request, response: Response) => {
     const { phone, password } = request.body as Record<string, string>;
-
+    
     try {
         if (!phone || !password) {
             throw new Error("Bad Request")
@@ -96,7 +96,7 @@ route.post("/api/user/login", async (request: Request, response: Response) => {
         const user = await User.findOne({ phone });
 
         if (!user) {
-            throw new Error("Pengguna tidak ditemukan atau belum terverifikasi.");
+            throw new Error("Pengguna tidak ditemukan.");
         }
 
         // compare password

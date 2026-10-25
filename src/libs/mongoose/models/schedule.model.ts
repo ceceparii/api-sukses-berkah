@@ -28,7 +28,7 @@ const AirlineSchema = new Schema<AirlineType>({
     logo: String,
 })
 
-const ScheduleSchema = new Schema<ScheduleType>({
+export const ScheduleSchema = new Schema<ScheduleType>({
     _id: Types.ObjectId,
     depart: AirportSchema,
     arrival: AirportSchema,

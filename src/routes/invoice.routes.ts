@@ -49,8 +49,11 @@ route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
         }
 
         const {_id, ...data} = req.body;
+
         if (_id) {
-            const invoice = await Invoice.findOneAndUpdate({_id}, {$set: data}, {
+            const totalIDR = data.currency === "IDR" ? data.total : (data.total * data.rate);
+
+            const invoice = await Invoice.findOneAndUpdate({_id}, {$set: {...data, totalIDR}}, {
                 new: true,
                 runValidators: true
             });
@@ -60,7 +63,6 @@ route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
             }
     
             return res.json({ message: "Berhasil menyimpan invoice", success: true, result: invoice });
-
         } else {
             const invoice = await Invoice.create({...data, _id: new Types.ObjectId()})
             return res.json({ message: "Berhasil menyimpan invoice", success: true, result: invoice });
@@ -93,6 +95,47 @@ route.get("/api/invoices", middleware, async (req: Request, res: Response) => {
     }
 })
 
+// get invoices report
+route.get("/api/invoices/report", middleware, async (req: Request, res: Response) => {
+    try {
+        const user = req.user;
+        if (!user) throw new Error("Pengguna tidak ditemukan.");
+        const userId = new Types.ObjectId(user._id);
+        const reports = await Invoice.aggregate([
+            {
+                $match: {
+                    userId
+                }
+            }, {
+                $group: {
+                    _id: {
+                        year: { $year: "$date" },
+                        month: { $month: "$date" }
+                    },
+                    total: {
+                        $sum: "$totalIDR"
+                    },
+                    count: {
+                        $sum: 1
+                    }
+                }
+            }, {
+                $sort: {
+                    "_id.year": 1,
+                    "_id.month": 1
+                }
+            }
+        ])
+
+        return res.json({ message: "report", success: true, result: reports });
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false})
+        }
+    }
+})
+
 // view invoice
 route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) => {
     try {
@@ -115,7 +158,7 @@ route.get("/api/invoice/:id", middleware, async (req: Request, res: Response) =>
 })
 
 // search invoice by month
-route.get(`/api/filter-month/invoice/:month/:year`, middleware, async (req: Request, res: Response) => {
+route.get("/api/filter-month/invoice/:month/:year", middleware, async (req: Request, res: Response) => {
     try {
         const month = Number(req.params.month);
         const year = Number(req.params.year);

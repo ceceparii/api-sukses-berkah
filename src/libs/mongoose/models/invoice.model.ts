@@ -1,4 +1,5 @@
 import { model, Schema, Types } from "mongoose";
+import { ScheduleSchema, ScheduleType } from "./schedule.model";
 
 type UnitType = "kg" | "pair" | "slop" | "item" | "pcs";
 
@@ -25,6 +26,7 @@ export interface InvoiceType<T= Types.ObjectId> {
     trip: "IDN" | "JP";
     items: ItemType[];
     total: number,
+    totalIDR: number,
 }
 
 const ItemSchema = new Schema<ItemType>({
@@ -38,7 +40,7 @@ const ItemSchema = new Schema<ItemType>({
     subtotal: Number
 })
 
-const InvoiceSchema = new Schema<InvoiceType>({
+const InvoiceSchema = new Schema<InvoiceType<ScheduleType>>({
     _id: Types.ObjectId,
     userId: Types.ObjectId,
     customer: String,
@@ -46,13 +48,11 @@ const InvoiceSchema = new Schema<InvoiceType>({
     rate: Number,
     deposit: Number,
     currency: { type: String, enum: ["JPY", "IDR"]},
-    batch: {
-        type: Types.ObjectId,
-        ref: "Schedule"
-    },
+    batch: ScheduleSchema,
     trip: { type: String, enum: ["IDN", "JP"]},
     items: [ItemSchema],
     total: Number,
+    totalIDR: Number,
 })
 
 export const Invoice = model("invoices", InvoiceSchema)

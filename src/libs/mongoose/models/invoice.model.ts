@@ -44,7 +44,7 @@ const InvoiceSchema = new Schema<InvoiceType<ScheduleType>>({
     _id: Types.ObjectId,
     userId: Types.ObjectId,
     customer: String,
-    date: { type: Date, required: true },
+    date: { type: Date, required: false },
     rate: Number,
     deposit: Number,
     currency: { type: String, enum: ["JPY", "IDR"]},

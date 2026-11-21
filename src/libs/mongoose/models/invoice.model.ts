@@ -30,7 +30,7 @@ export interface InvoiceType {
     date: Date;
     currency: "JPY" | "IDR";
     batch: BatchType;
-    trip: "IDN" | "JP";
+    trip: string;
     items: ItemType[];
     total: number,
     totalIDR: number,
@@ -63,7 +63,7 @@ const InvoiceSchema = new Schema<InvoiceType>({
     deposit: Number,
     currency: { type: String, enum: ["JPY", "IDR"]},
     batch: BatchSchema,
-    trip: { type: String, enum: ["IDN", "JP"]},
+    trip: String,
     items: [ItemSchema],
     total: Number,
     totalIDR: Number,

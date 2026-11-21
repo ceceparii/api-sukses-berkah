@@ -21,7 +21,7 @@ route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Res
         const invoice = await Invoice.findOne({_id: req.params.id}).populate({
             path: "batch",
             model: Schedule,
-        }) as InvoiceType<ScheduleType> | null;
+        }) as InvoiceType | null;
 
         if(!invoice) throw new Error("Invoice tidak ditemukan");
 
@@ -167,15 +167,11 @@ route.get("/api/filter-month/invoice/:month/:year", middleware, async (req: Requ
         const endDate = new Date(year, month, 1);
         
         const invoices = await Invoice.find({
-            date: {
+            "batch.date": {
                     $gte: startDate,
                     $lt: endDate,
                 }
-            })
-        .populate({
-            path: "batch",
-            model: Schedule,
-        });
+            });
 
         return res.json({ message: "", success: true, result: invoices });
     } catch (error: unknown) {

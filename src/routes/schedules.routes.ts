@@ -143,15 +143,22 @@ route.delete("/api/schedule/:id", middleware, async (req: Request, res: Response
 // serach by name
 route.get("/api/schedule/find-by-personal-name/:name", middleware, async (req: Request, res: Response) => {
     try {
+        const keyword = req.params.name as string
         const d = new Date();
         const year = d.getFullYear();
         const month = d.getMonth() - 2;
+        const words = keyword.trim().split(/\s+/);
 
         const schedules = await Schedule.find({
-            "persons.name": req.params.name,
-            date: {
-                $gte: new Date(year, month, 1)
-            }
+            $and: words.map(word => ({
+                "persons.name": {
+                    $regex: word,
+                    $options: "i"
+                },
+                date: {
+                    $gte: new Date(year, month, 1)
+                }
+            }))
         });
 
         return res.json({success: true, result: schedules})

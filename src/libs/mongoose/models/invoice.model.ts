@@ -3,6 +3,13 @@ import { ScheduleSchema, ScheduleType } from "./schedule.model";
 
 type UnitType = "kg" | "pair" | "slop" | "item" | "pcs";
 
+export interface BatchType {
+    origin: string;
+    dest: string;
+    date: Date;
+    dateStr: string;
+}
+
 export interface ItemType {
     _id: Types.ObjectId,
     name: string;
@@ -14,7 +21,7 @@ export interface ItemType {
     unit: UnitType;
 }
 
-export interface InvoiceType<T= Types.ObjectId> {
+export interface InvoiceType {
     _id: Types.ObjectId;
     userId: Types.ObjectId;
     customer: String | RegExp;
@@ -22,12 +29,19 @@ export interface InvoiceType<T= Types.ObjectId> {
     deposit: number;
     date: Date;
     currency: "JPY" | "IDR";
-    batch: T;
+    batch: BatchType;
     trip: "IDN" | "JP";
     items: ItemType[];
     total: number,
     totalIDR: number,
 }
+
+const BatchSchema = new Schema<BatchType>({
+    date: Date,
+    dateStr: String,
+    origin: String,
+    dest: String
+})
 
 const ItemSchema = new Schema<ItemType>({
     _id: Types.ObjectId,
@@ -40,7 +54,7 @@ const ItemSchema = new Schema<ItemType>({
     subtotal: Number
 })
 
-const InvoiceSchema = new Schema<InvoiceType<ScheduleType>>({
+const InvoiceSchema = new Schema<InvoiceType>({
     _id: Types.ObjectId,
     userId: Types.ObjectId,
     customer: String,
@@ -48,7 +62,7 @@ const InvoiceSchema = new Schema<InvoiceType<ScheduleType>>({
     rate: Number,
     deposit: Number,
     currency: { type: String, enum: ["JPY", "IDR"]},
-    batch: ScheduleSchema,
+    batch: BatchSchema,
     trip: { type: String, enum: ["IDN", "JP"]},
     items: [ItemSchema],
     total: Number,

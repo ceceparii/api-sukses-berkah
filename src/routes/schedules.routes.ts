@@ -18,6 +18,33 @@ route.post("/api/schedule", middleware, async (req: Request, res: Response) => {
     }
 })
 
+// filter schedules by month
+route.get("/api/schedules/filter/:month/:year", middleware, async (req: Request, res: Response) => {
+    try {
+        const month: number = Number(req.params.month); // 1 - 12
+        const year: number = Number(req.params.year);
+
+        const monthIndex = month - 1;
+
+        const startDate = new Date(year, monthIndex - 1, 1, 0, 0, 0, 0);
+        const endDate = new Date(year, monthIndex + 2, 0, 23, 59, 59, 999);
+
+        const result = await Schedule.find({
+            date: {
+                $gte: startDate,
+                $lte: endDate,
+            }
+        }).sort({ date: 1 });
+
+        return res.json({ message: "OK", success: true, result })
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false })
+        }
+    }
+});
+
 // get schedules by month and origin
 route.get("/api/schedules/:month/:year/:origin", middleware, async (req: Request, res: Response) => {
     try {

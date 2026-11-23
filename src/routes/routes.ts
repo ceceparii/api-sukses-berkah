@@ -18,21 +18,21 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
         const month = new Date().getMonth();
 
         const current_month = {
+            $gte: new Date(year, month, 1),
+            $lt: new Date(year, month + 1, 1),
+        }
+
+        const last_month = {
             $gte: new Date(year, month -1, 1),
             $lt: new Date(year, month, 1),
         }
 
-        const last_month = {
-            $gte: new Date(year, month -2, 1),
-            $lt: new Date(year, month -1, 1),
-        }
-
         // [idncurrent, jpcurrent, idnlastmonth, jplastmonth]
         const invoices = await Promise.all([
-            Invoice.find({date: current_month}),
-            Invoice.find({return: current_month}),
-            Invoice.find({date: last_month}),
-            Invoice.find({return: last_month}),
+            Invoice.find({"batch.date": current_month, "batch.origin": "indonesia"}),
+            Invoice.find({"batch.date": last_month, "batch.origin": "indonesia"}),
+            Invoice.find({"batch.date": current_month, "batch.origin": {$ne: "indonesia"}}),
+            Invoice.find({"batch.date": last_month, "batch.origin":{ $ne: "indonesia"}}),
         ])
         
         const payments_total = invoices.map((invoice) => {
@@ -41,7 +41,7 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
 
         const schedules_idn = await Schedule.find({
             date: {
-                $gte: new Date(year, month -1, 1)
+                $gte: new Date(year, month + 1, 1)
             }
         })
         .limit(2)
@@ -49,7 +49,7 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
 
         const schedules_jp = await Schedule.find({
             return: {
-                $gte: new Date(year, month -1, 1)
+                $gte: new Date(year, month + 1, 1)
             }
         })
         .limit(2)

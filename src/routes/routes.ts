@@ -72,15 +72,15 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
         const [ idnSchedule, jpSchedule] = await Promise.all([
             Schedule.find({
                 date: {
-                    $gte: date.setDate(currentDate - 30),
-                    $lte: date.setDate(currentDate + 30),
+                    $gte: date.setMonth(currentMonth - 1, 1),
+                    $lte: date.setMonth(currentMonth + 2, 0),
                 }
             })
             .sort({date: 1}),
             Schedule.find({
                 return: {
-                    $gte: date.setDate(currentDate - 30),
-                    $lte: date.setDate(currentDate + 30),
+                    $gte: date.setMonth(currentMonth - 1, 1),
+                    $lte: date.setMonth(currentMonth + 2, 0),
                 }
             })
             .sort({return: 1})

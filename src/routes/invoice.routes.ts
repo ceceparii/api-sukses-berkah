@@ -7,38 +7,6 @@ import { Types } from "mongoose";
 
 const route = Router();
 
-// download invoice
-route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Response) => {
-    const userId = req.user?._id;
-
-    try {
-        if(!userId) {
-            return res.json({ success: false, message: "Invalid user id"})
-        }
-        const user = await User.findOne({_id: userId}).select("username phone banks");
-        if (!user) throw new Error("Pengguna tidak ditemukan.");
-
-        const invoice = await Invoice.findOne({_id: req.params.id}).populate({
-            path: "batch",
-            model: Schedule,
-        }) as InvoiceType | null;
-
-        if(!invoice) throw new Error("Invoice tidak ditemukan");
-
-        const result = {
-            invoice,
-            user,
-        }
-
-        return res.json({ success: true, result, message: ""})
-    } catch (error: unknown) {
-        if(error instanceof Error) {
-            console.error(error.message)
-            return res.json({ message: error.message, success: false})
-        }
-    }
-})
-
 // save invoice
 route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
     const userId = req.user?._id;
@@ -163,9 +131,11 @@ route.get("/api/filter-month/invoice/:month/:year", middleware, async (req: Requ
         const month = Number(req.params.month);
         const year = Number(req.params.year);
 
-        const startDate = new Date(year, month -1, 1);
-        const endDate = new Date(year, month, 1);
-        
+        const monthIndex = month - 1;
+
+        const startDate = new Date(year, monthIndex - 1, 1, 0, 0, 0, 0);
+        const endDate = new Date(year, monthIndex + 2, 0, 23, 59, 59, 999);
+
         const invoices = await Invoice.find({
             "batch.date": {
                     $gte: startDate,
@@ -182,7 +152,7 @@ route.get("/api/filter-month/invoice/:month/:year", middleware, async (req: Requ
     }
 })
 
-// search invoice
+// search invoice by name
 route.get("/api/search/invoice/:name", middleware, async (req: Request, res: Response) => {
     try {
         const search = req.params.name as string;
@@ -196,12 +166,19 @@ route.get("/api/search/invoice/:name", middleware, async (req: Request, res: Res
                 .join(".*"),
             "i"
         );
+        
+        const year = new Date().getFullYear();
+        const monthIndex = new Date().getMonth();
+
+        const startDate = new Date(year, monthIndex - 1, 1, 0, 0, 0, 0);
+        const endDate = new Date(year, monthIndex + 2, 0, 23, 59, 59, 999);
 
         const invoices = await Invoice.find({
-            customer: regex
-        }).populate({
-            path: "batch",
-            model: Schedule,
+            customer: regex,
+            "batch.date": {
+                $gte: startDate,
+                $lt: endDate
+            }
         });
 
         return res.json({ message: "", success: true, result: invoices });
@@ -236,3 +213,35 @@ route.delete("/api/delete/invoice/:id", middleware, async (req: Request, res: Re
     }
 })
 export const invoiceRoute = route;
+
+// // download invoice
+// route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Response) => {
+//     const userId = req.user?._id;
+
+//     try {
+//         if(!userId) {
+//             return res.json({ success: false, message: "Invalid user id"})
+//         }
+//         const user = await User.findOne({_id: userId}).select("username phone banks");
+//         if (!user) throw new Error("Pengguna tidak ditemukan.");
+
+//         const invoice = await Invoice.findOne({_id: req.params.id}).populate({
+//             path: "batch",
+//             model: Schedule,
+//         }) as InvoiceType | null;
+
+//         if(!invoice) throw new Error("Invoice tidak ditemukan");
+
+//         const result = {
+//             invoice,
+//             user,
+//         }
+
+//         return res.json({ success: true, result, message: ""})
+//     } catch (error: unknown) {
+//         if(error instanceof Error) {
+//             console.error(error.message)
+//             return res.json({ message: error.message, success: false})
+//         }
+//     }
+// })

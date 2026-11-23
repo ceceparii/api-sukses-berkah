@@ -45,52 +45,6 @@ route.get("/api/schedules/filter/:month/:year", middleware, async (req: Request,
     }
 });
 
-// get schedules by month and origin
-route.get("/api/schedules/:month/:year/:origin", middleware, async (req: Request, res: Response) => {
-    try {
-        const month: number = Number(req.params.month);
-        const year: number = Number(req.params.year);
-        const origin: string = req.params.origin as string;
-        
-        const startDate = new Date(year, month -1, 1);
-        const endDate = new Date(year, month, 1);
-
-        const key = origin.toUpperCase() === "INDONESIA" ? "date" : "return";
-        
-        const query = {
-            [key]: {
-                $gte: startDate,
-                $lt: endDate,
-            }
-        }
-
-        const schedules = await Schedule.find(query);
-
-        const result = schedules.map((s) => {
-            if (key === "date") {
-                return s
-            } else {
-                return {
-                    persons: s.persons,
-                    airlines: s.airlines,
-                    return: s.date,
-                    _id: s._id,
-                    date: s.return,
-                    depart: s.arrival,
-                    arrival: s.depart
-                }
-            }
-        })
-
-        return res.json({ message: "OK", success: true, result })
-    } catch (error: unknown) {
-        if(error instanceof Error) {
-            console.error(error.message)
-            return res.json({ message: error.message, success: false })
-        }
-    }
-});
-
 // get all schedules
 route.get("/api/schedules", middleware, async (req: Request, res: Response) => {
     try {
@@ -197,3 +151,50 @@ route.get("/api/schedule/find-by-personal-name/:name", middleware, async (req: R
     }
 })
 export const scheduleRoutes = route
+
+
+// // get schedules by month and origin
+// route.get("/api/schedules/:month/:year/:origin", middleware, async (req: Request, res: Response) => {
+//     try {
+//         const month: number = Number(req.params.month);
+//         const year: number = Number(req.params.year);
+//         const origin: string = req.params.origin as string;
+        
+//         const startDate = new Date(year, month -1, 1);
+//         const endDate = new Date(year, month, 1);
+
+//         const key = origin.toUpperCase() === "INDONESIA" ? "date" : "return";
+        
+//         const query = {
+//             [key]: {
+//                 $gte: startDate,
+//                 $lt: endDate,
+//             }
+//         }
+
+//         const schedules = await Schedule.find(query);
+
+//         const result = schedules.map((s) => {
+//             if (key === "date") {
+//                 return s
+//             } else {
+//                 return {
+//                     persons: s.persons,
+//                     airlines: s.airlines,
+//                     return: s.date,
+//                     _id: s._id,
+//                     date: s.return,
+//                     depart: s.arrival,
+//                     arrival: s.depart
+//                 }
+//             }
+//         })
+
+//         return res.json({ message: "OK", success: true, result })
+//     } catch (error: unknown) {
+//         if(error instanceof Error) {
+//             console.error(error.message)
+//             return res.json({ message: error.message, success: false })
+//         }
+//     }
+// });

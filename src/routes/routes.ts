@@ -54,15 +54,13 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
                     $gte: date.setDate(currentDate - 1)
                 }
             })
-            .limit(2)
-            .sort({date: 1}),
+            .limit(1),
             Schedule.find({
                 return: {
                     $gte: date.setDate(currentDate - 1)
                 }
             })
-            .limit(2)
-            .sort({return: 1})
+            .limit(1)
         ])
         
         const nextSchedule: Record<string, ScheduleType[]> = {

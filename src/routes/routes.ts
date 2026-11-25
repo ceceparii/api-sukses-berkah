@@ -85,7 +85,7 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
             })
             .sort({return: 1})
         ])
-
+        
         const batchs: Record<string, BatchType[]> = {
             idnBatch: idnSchedule.map((s) => ({
                 origin: s.depart.country,
@@ -99,7 +99,7 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
                 origin: s.arrival.country,
                 dest: s.depart.country,
                 date: s.return!,
-                dateStr: new Date(s.date).toLocaleDateString("id-ID", {
+                dateStr: new Date(s.return!).toLocaleDateString("id-ID", {
                     dateStyle: "long"
                 })
             }))

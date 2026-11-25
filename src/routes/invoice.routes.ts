@@ -7,6 +7,37 @@ import { Types } from "mongoose";
 
 const route = Router();
 
+// download invoice
+route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+
+    try {
+        if(!userId) {
+            return res.json({ success: false, message: "Invalid user id"})
+        }
+        const user = await User.findOne({_id: userId}).select("username phone banks");
+        if (!user) throw new Error("Pengguna tidak ditemukan.");
+
+        const invoice = await Invoice.findOne({_id: req.params.id}).populate({
+            path: "batch",
+            model: Schedule,
+        }) as InvoiceType | null;
+
+        if(!invoice) throw new Error("Invoice tidak ditemukan");
+
+        const result = {
+            invoice,
+            user,
+        }
+
+        return res.json({ success: true, result, message: ""})
+    } catch (error: unknown) {
+        if(error instanceof Error) {
+            console.error(error.message)
+            return res.json({ message: error.message, success: false})
+        }
+    }
+})
 // save invoice
 route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
     const userId = req.user?._id;
@@ -214,34 +245,3 @@ route.delete("/api/delete/invoice/:id", middleware, async (req: Request, res: Re
 })
 export const invoiceRoute = route;
 
-// // download invoice
-// route.get("/api/download/invoice/:id", middleware, async (req: Request, res: Response) => {
-//     const userId = req.user?._id;
-
-//     try {
-//         if(!userId) {
-//             return res.json({ success: false, message: "Invalid user id"})
-//         }
-//         const user = await User.findOne({_id: userId}).select("username phone banks");
-//         if (!user) throw new Error("Pengguna tidak ditemukan.");
-
-//         const invoice = await Invoice.findOne({_id: req.params.id}).populate({
-//             path: "batch",
-//             model: Schedule,
-//         }) as InvoiceType | null;
-
-//         if(!invoice) throw new Error("Invoice tidak ditemukan");
-
-//         const result = {
-//             invoice,
-//             user,
-//         }
-
-//         return res.json({ success: true, result, message: ""})
-//     } catch (error: unknown) {
-//         if(error instanceof Error) {
-//             console.error(error.message)
-//             return res.json({ message: error.message, success: false})
-//         }
-//     }
-// })

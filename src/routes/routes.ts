@@ -28,12 +28,15 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
             $gte: new Date(currentYear, currentMonth - 1, 1, 0, 0, 0, 0),
             $lte: new Date(currentYear, currentMonth, 0, 23, 59, 59, 999),
         };
+
         // [idncurrent, idnlastmonth, jpcurrent,  jplastmonth]
+        const ORIGIN = ["indonesia", "Indonesia"];
+
         const invoices = await Promise.all([
-            Invoice.find({"batch.date": current_month, "batch.origin": "indonesia"}),
-            Invoice.find({"batch.date": last_month, "batch.origin": "indonesia"}),
-            Invoice.find({"batch.date": current_month, "batch.origin": {$ne: "indonesia"}}),
-            Invoice.find({"batch.date": last_month, "batch.origin":{ $ne: "indonesia"}}),
+            Invoice.find({"batch.date": current_month, "batch.origin": { $eq: ORIGIN}}),
+            Invoice.find({"batch.date": last_month, "batch.origin": {$eq: ORIGIN}}),
+            Invoice.find({"batch.date": current_month, "batch.origin": {$ne: ORIGIN}}),
+            Invoice.find({"batch.date": last_month, "batch.origin":{ $ne: ORIGIN}}),
         ])
         
         const [idncurrent, idnlastmonth, jpcurrent,  jplastmonth] = invoices.map((invoice) => {
@@ -88,16 +91,16 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
         
         const batchs: Record<string, BatchType[]> = {
             idnBatch: idnSchedule.map((s) => ({
-                origin: s.depart.country,
-                dest: s.arrival.country,
+                origin: s.depart.country.toLowerCase(),
+                dest: s.arrival.country.toLowerCase(),
                 date: s.date,
                 dateStr: new Date(s.date).toLocaleDateString("id-ID", {
                     dateStyle: "long"
                 })
             })),
             jpBatch: jpSchedule.map((s) => ({
-                origin: s.arrival.country,
-                dest: s.depart.country,
+                origin: s.arrival.country.toLowerCase(),
+                dest: s.depart.country.toLowerCase(),
                 date: s.return!,
                 dateStr: new Date(s.return!).toLocaleDateString("id-ID", {
                     dateStyle: "long"

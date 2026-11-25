@@ -28,15 +28,12 @@ route.get("/api/initialize", middleware, async (req: Request, res: Response) => 
             $gte: new Date(currentYear, currentMonth - 1, 1, 0, 0, 0, 0),
             $lte: new Date(currentYear, currentMonth, 0, 23, 59, 59, 999),
         };
-
         // [idncurrent, idnlastmonth, jpcurrent,  jplastmonth]
-        const ORIGIN = ["indonesia", "Indonesia"];
-
         const invoices = await Promise.all([
-            Invoice.find({"batch.date": current_month, "batch.origin": { $eq: ORIGIN}}),
-            Invoice.find({"batch.date": last_month, "batch.origin": {$eq: ORIGIN}}),
-            Invoice.find({"batch.date": current_month, "batch.origin": {$ne: ORIGIN}}),
-            Invoice.find({"batch.date": last_month, "batch.origin":{ $ne: ORIGIN}}),
+            Invoice.find({"batch.date": current_month, "batch.origin": "indonesia"}),
+            Invoice.find({"batch.date": last_month, "batch.origin": "indonesia"}),
+            Invoice.find({"batch.date": current_month, "batch.origin": {$ne: "indonesia"}}),
+            Invoice.find({"batch.date": last_month, "batch.origin":{ $ne: "indonesia"}}),
         ])
         
         const [idncurrent, idnlastmonth, jpcurrent,  jplastmonth] = invoices.map((invoice) => {

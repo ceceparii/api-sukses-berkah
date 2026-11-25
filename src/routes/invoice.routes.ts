@@ -53,7 +53,7 @@ route.post("/api/invoice", middleware, async (req: Request, res: Response) => {
             const totalIDR = data.currency === "IDR" ? data.total : (data.total * data.rate);
 
             const invoice = await Invoice.findOneAndUpdate({_id}, {$set: {...data, totalIDR}}, {
-                new: true,
+                returnDocument: "after",
                 runValidators: true
             });
     
